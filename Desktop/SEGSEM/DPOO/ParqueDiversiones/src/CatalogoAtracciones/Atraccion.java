@@ -11,20 +11,22 @@ public abstract class Atraccion {
 	public String ubicacion;
 	public int cupoMax;
 	public int empleadosMin;
-	public NivelesValidos nivelExclusividad;
+	public String nivelExclusividad;
 	public List<String> disponibleClima;
 	public boolean prestaServicio;
 	public List<Empleado> empleados;
 	
 
 	public Atraccion(String nombre, String ubicacion, int cupoMax, int empleadosMin,
-			NivelesValidos nivelExclusividad, List<String> disponibleClima) {
+			String nivelExclusividad, List<String> disponibleClima, List<Empleado> empleados) {
 		this.nombre = nombre;
 		this.ubicacion = ubicacion;
 		this.cupoMax = cupoMax;
 		this.empleadosMin = empleadosMin;
 		this.nivelExclusividad = nivelExclusividad;
-		this.disponibleClima = disponibleClima; //revisar eso mejor
+		this.disponibleClima = disponibleClima;
+		this.empleados = empleados;
+		
 		if (this.empleados.size() >= empleadosMin) {
 			this.prestaServicio = true;
 		}
@@ -34,9 +36,6 @@ public abstract class Atraccion {
 		
 	}
 	
-	public enum NivelesValidos {
-		BASICO, DIAMANTE, ORO, FAMILIAR;
-	}
 	//public void asignarEmpleado();
 	
 	public String getNombre() {
@@ -71,11 +70,11 @@ public abstract class Atraccion {
 		this.empleadosMin = empleadosMin;
 	}
 	
-	public NivelesValidos getNivelExclusividad() {
+	public String getNivelExclusividad() {
 		return nivelExclusividad;
 	}
 	
-	public void setNivelExclusividad(NivelesValidos nivelExclusividad) {
+	public void setNivelExclusividad(String nivelExclusividad) {
 		this.nivelExclusividad = nivelExclusividad;
 	}
 	
@@ -103,17 +102,5 @@ public abstract class Atraccion {
 				System.out.print("Como ahora hay " + this.empleados.size() + "la atracción presta servicio.");
 		}
 	}
-	
-	public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Consola para crear una nueva atracción");
-        System.out.print("¿Que tipo de atracción desea?");
-        System.out.print("1. Mecánica");
-        System.out.print("2. Cultural");
-        System.out.print("3. Espectáculo");
-	}
-        
-
      
-	
 }
