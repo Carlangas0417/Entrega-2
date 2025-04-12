@@ -1,0 +1,997 @@
+/*
+Gramatica para el Robot:
+Autor: Alejandro Arango
+Modificado por: Silvia Takahashi
+Modificado por: Juan Pablo Morales.
+Agregadas producciones para manejar globos
+Modificado por Silvia Takahashi
+
+
+ **/
+
+
+options 
+{
+  
+	LOOKAHEAD=1; 
+	IGNORE_CASE=true;
+	STATIC = false;
+	
+}
+   
+
+PARSER_BEGIN(Robot)
+
+package uniandes.lym.robot.control;
+
+import uniandes.lym.robot.kernel.*;
+import uniandes.lym.robot.view.Console;
+ 
+import java.awt.Point;
+import java.io.*;
+import java.util.Vector;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
+
+@SuppressWarnings("serial")
+public class Robot 
+{
+
+
+	private RobotWorldDec world;
+	private static boolean condicion=true;
+	private static boolean cambio=false;
+	private static HashMap<String, ArrayList<String >> macroParametro = new HashMap<String, ArrayList<String >>();
+	private static HashMap<String,List<String >> macroAcciones = new HashMap<String, List<String >>();
+	private static Map<String,Integer > variables = new HashMap<String,Integer >();
+	private static String macroActual = "";
+	void setWorld(RobotWorld w) {
+		world = (RobotWorldDec) w;	
+	}
+
+	String salida=new String();
+	
+	void parseMacro(String input, List<String > parametros) throws ParseException {
+  }
+}
+
+
+PARSER_END(Robot)
+
+SKIP:
+{
+	" "
+	|	"\r"
+	|	"\t"
+	| "\n"
+}
+
+TOKEN: /* Nombres de Comandos */
+{
+
+			<MOV:  "Mov">
+		| 	<PUT: "Put">
+		|  <GO: "GO" >
+        |  < HOP:  "HOP" >		
+
+}
+TOKEN: /* Nombres de Parentesis */
+{
+< LPAR: "(" >  
+| <RPAR : ")">
+| < SEMI: ";" >
+| < IGUAL : "=" >		
+| < LBRAC : "{" >
+| < RBRAC : "}" >
+}
+
+TOKEN [IGNORE_CASE]:
+{
+  < TURNTOMY : "TURNTOMY" >
+| < TURNTOTHE: "TURNTOTHE" >
+| < WALK : "WALK" >
+| < JUMP : "JUMP" >
+| < DROP : "DROP" >
+| < PICK : "PICK" >
+| < GRAB : "GRAB" >
+| < LETGO  : "LETGO" >
+| < POP : "POP" >
+| < MOVES : "MOVES" >
+| < NOP : "NOP" >
+| < SAFEEXE : "SAFEEXE" >
+
+}
+TOKEN [IGNORE_CASE]:
+{
+ < IF  : "IF" >
+| < THEN : "THEN" >
+| < ELSE  : "ELSE" >
+| < DO : "DO" >
+| < REP : "REP" >
+| < TIMES: "TIMES" >
+
+}
+TOKEN [IGNORE_CASE]:
+{
+ <ISBLOCKED : "ISBLOCKED?" >
+ |< ISFACING : "ISFACING?" >
+ |< ZERO : "ZERO?" >
+ |< NOT : "NOT" >
+} 
+TOKEN [IGNORE_CASE] : /* OPERATORS */
+{
+< VALOR: (["0"-"9"])+ >
+| < SIZE: "SIZE" >
+| < MYX: "MYX" >
+| < MYY: "MYY" >
+| < MYCHIPS: "MYCHIPS" >
+| < MYBALLOONS: "MYBALLOONS" >
+| < BALLOONSHERE: "BALLOONSHERE" >
+| < CHIPSHERE: "CHIPSHERE" >
+| < ROOMFORCHIPS: "ROOMFORCHIPS" >
+| < EXEC : "EXEC"  >
+| < NEW :  "NEW" >
+| < VAR: "VAR" >
+| < MACRO: "MACRO" >
+| < FORWARD: "FORWARD" >
+|< RIGHT: "RIGHT" >
+|< LEFT: "LEFT" >
+| < FRONT : "FRONT" >
+| < BACK:"BACK" >
+| < NORTH: "NORTH" >
+| < EAST:"EAST" >
+| < WEST:"WEST" >
+|< SOUTH: "SOUTH" >
+| < FI : "F"|"f" "I"|"i" >
+| < P  : "P"|"p" >
+| < ELEMENTO: (["a"-"z"] | ["0"-"9"] )+ >
+
+}
+TOKEN:
+{
+		<BALLOONS:  "BALLOONS" >
+		|	<CHIPS:     "CHIPS"  >	
+
+}
+
+
+
+TOKEN :
+{
+		<NUM: (<DIGIT>)+ >
+		|  	<#DIGIT: ["0"-"9"] >
+        
+}
+
+
+void inicialMacro(List<String > parametros):
+{ boolean parametro = false;
+ int numero =0; }
+{
+  < WALK > (< P > {parametro = true; })? <LPAR> { numero=valor(); } { if (parametro==true) {numero = Integer.parseInt(parametros.get(numero)); } } <RPAR><SEMI>  walk_accion(numero)
+}
+
+
+
+void inicial() :
+{}
+{
+ (
+   exec()| (< NEW > (var() | definirMacro()))
+ )
+}
+
+
+void exec():
+{ }
+{
+	< EXEC > bloque()  
+}
+void var():
+{String nombreVariable = "";
+int numero;}
+{
+  < VAR >
+  <ELEMENTO >
+  {
+    try {
+      nombreVariable = token.image;
+    }
+    catch(Exception e) {
+    }
+  }  <IGUAL >
+  {
+    try { numero=valor(); variables.put(nombreVariable,numero); }
+    catch (Exception e) { }} 
+}
+int obtenerVar() :
+{ String nombreVariable = ""; int valorVariable; }
+{
+  <ELEMENTO>
+  {
+    try {
+      nombreVariable = token.image;
+      if (variables.containsKey(nombreVariable)) {
+        valorVariable = variables.get(nombreVariable);
+        return valorVariable;
+      } else {
+        System.out.println("Variable " + nombreVariable + " no esta definida.");
+      }
+    }
+    catch(Exception e) { }
+  }
+}
+void bloque():
+{}
+{
+  < LBRAC >( comando() )* < RBRAC >
+}
+
+void comando():
+{ }
+{
+ (walk()
+ | jump()
+ | drop()
+ | pick()
+ | grab()
+ | letgo()
+ | pop()
+ | turntomy()
+ | turntothe()
+ | moves()
+ |condicional()
+ |nop()
+ |safeexe()
+ |llamarMacro())
+}
+void turntomy():
+{ }
+{
+  < TURNTOMY >
+  < LPAR > (< RIGHT > {if (condicion==true && cambio==false || condicion==true && cambio==true) { if (world.facingNorth())
+  					  { world.turnRight(); }
+  					  else if (world.facingWest())
+  					  { world.turnRight(); world.turnRight(); }
+  					  else if (world.facingSouth())
+  					  { world.turnRight(); world.turnRight(); world.turnRight(); }
+  					 }
+  				}
+  | < LEFT > { if (condicion==true && cambio==false || condicion==true && cambio==true) { if (world.facingNorth())
+  				  { world.turnRight(); world.turnRight(); world.turnRight(); }
+  				  else if (world.facingEast())
+  				  { world.turnRight(); world.turnRight(); }
+  				  else if (world.facingSouth())
+  				  { world.turnRight(); }
+  				}
+  			 }
+  |< BACK > {if (condicion==true && cambio==false || condicion==true && cambio==true) { if (world.facingNorth())
+  				{ world.turnRight(); world.turnRight();  }
+  				else if (world.facingEast())
+  				{ world.turnRight(); }
+  				else if (world.facingWest())
+  				{ world.turnRight(); world.turnRight(); world.turnRight();  }
+  		    }
+  		  }
+  | < FRONT > { if (condicion==true && cambio==false || condicion==true && cambio==true) { if (world.facingEast())
+  				{world.turnRight(); world.turnRight(); world.turnRight(); }
+  				else if (world.facingSouth())
+  				{world.turnRight(); world.turnRight(); }
+  				else if (world.facingWest())
+  				{ world.turnRight();}
+             }
+           }
+  )                   
+   < RPAR ><SEMI >
+} 
+void turntothe():
+{ }
+{
+  (< TURNTOTHE >) <LPAR>
+  (
+    <NORTH> {if (condicion==true && cambio==false || condicion==true && cambio==true) { if (world.facingWest())
+  			{ world.turnRight(); }
+  			else if (world.facingSouth())
+  			{ world.turnRight(); world.turnRight();  }
+  			else if (world.facingEast())
+  			{world.turnRight(); world.turnRight(); world.turnRight(); }
+  			 } }
+  			
+| < SOUTH > { if (condicion==true && cambio==false || condicion==true && cambio==true) {  if (world.facingNorth())
+				{world.turnRight(); world.turnRight(); }
+			else if (world.facingEast())
+				{ world.turnRight();}
+			else if (world.facingWest())
+				{ world.turnRight();world.turnRight();world.turnRight();}
+				 } }
+
+| < EAST > { if (condicion==true && cambio==false || condicion==true && cambio==true) { if (world.facingNorth())
+				{world.turnRight(); }
+			else if (world.facingWest())
+				{world.turnRight();world.turnRight(); }
+			else if (world.facingSouth())
+				{world.turnRight();world.turnRight();world.turnRight(); }} }
+				
+| < WEST > {if (condicion==true && cambio==false || condicion==true && cambio==true) { if (world.facingNorth())
+			{ world.turnRight();world.turnRight();world.turnRight();}
+			else if (world.facingEast())
+			{world.turnRight();world.turnRight();}
+			else if (world.facingSouth())
+			{world.turnRight();}  } }
+	)
+   <RPAR><SEMI>
+}
+int valor():
+{ int numero= 0;}
+{
+(
+	< VALOR > { numero = Integer.parseInt(token.image); return numero; }
+| < SIZE > { numero = world.getN(); return numero; }
+| < MYX > { numero = (int) world.getPosition().getX(); return numero; }
+| < MYY > { numero = (int) world.getPosition().getY(); return numero; }
+| < MYCHIPS > { numero = world.getMyChips(); return numero; }
+| < MYBALLOONS > { numero = world.getMyBalloons(); return numero; }
+| < BALLOONSHERE > { numero = world.countBalloons(); return numero; }
+| < CHIPSHERE > { numero = world.chipsToPick(); return numero; } 
+| < ROOMFORCHIPS > { numero = world.freeSpacesForChips(); return numero; }
+)
+| { numero=obtenerVar(); return numero;}
+
+}
+
+
+void nop():
+{ }
+{
+  < NOP ><SEMI>
+}
+void moves():
+{ }
+{
+  (< MOVES >) <LPAR> (< FORWARD > {if (condicion==true && cambio==false || condicion==true && cambio==true) { if (world.facingNorth())
+  								 {world.up(); }
+  								 else if (world.facingEast())
+								 {world.right(); }
+								 else if (world.facingSouth())
+								 {world.down(); }
+								 else if (world.facingWest())
+								 {world.left(); }
+  								} }
+| < RIGHT > {if (condicion==true && cambio==false || condicion==true && cambio==true) {  if (world.facingNorth())
+  				  {world.right(); }
+  				  else if (world.facingEast())
+  				  {world.down(); }
+  				  else if (world.facingSouth())
+  				  {world.left(); }
+  				  else if (world.facingWest())
+  				  {world.up(); }
+  				} }
+| < LEFT > { if (condicion==true && cambio==false || condicion==true && cambio==true) { if (world.facingNorth())
+  				  {world.left(); }
+  				  else if (world.facingEast())
+  				  {world.up(); }
+  				  else if (world.facingSouth())
+  				  {world.right(); }
+  				  else if (world.facingWest())
+  				  {world.down(); }
+  				} }
+| < BACK > {if (condicion==true && cambio==false || condicion==true && cambio==true) {
+  				  if (world.facingNorth())
+  				  {world.down(); }
+  				  else if (world.facingEast())
+  				  {world.left(); }
+  				  else if (world.facingSouth())
+  				  {world.up(); }
+  				  else if (world.facingWest())
+  				  {world.right(); }
+  				} }
+  		)
+
+  		
+ ( "," (< FORWARD > {if (condicion==true && cambio==false || condicion==true && cambio==true) { if (world.facingNorth())
+  								 {world.up(); }
+  								 else if (world.facingEast())
+								 {world.right(); }
+								 else if (world.facingSouth())
+								 {world.down(); }
+								 else if (world.facingWest())
+								 {world.left(); }
+  								} }
+| < RIGHT > { if (condicion==true && cambio==false || condicion==true && cambio==true) { if (world.facingNorth())
+  				  {world.right(); }
+  				  else if (world.facingEast())
+  				  {world.down(); }
+  				  else if (world.facingSouth())
+  				  {world.left(); }
+  				  else if (world.facingWest())
+  				  {world.up(); }
+  				} }
+| < LEFT > { if (condicion==true && cambio==false || condicion==true && cambio==true) { if (world.facingNorth())
+  				  {world.left(); }
+  				  else if (world.facingEast())
+  				  {world.up(); }
+  				  else if (world.facingSouth())
+  				  {world.right(); }
+  				  else if (world.facingWest())
+  				  {world.down(); }
+  				} }   
+| < BACK > { if (condicion==true && cambio==false || condicion==true && cambio==true) { if (world.facingNorth())
+  				  {world.down(); }
+  				  else if (world.facingEast())
+  				  {world.left(); }
+  				  else if (world.facingSouth())
+  				  {world.up(); }
+  				  else if (world.facingWest())
+  				  {world.right(); }
+  				} } ) )* <RPAR><SEMI>
+}
+boolean isblocked():
+{}
+{
+  < ISBLOCKED > <LPAR> (< LEFT ><RPAR> {if (world.facingNorth()) { return world.isBlocked(new Point(world.getPosition().x-1,world.getPosition().y)); }
+										else if (world.facingEast()) { return world.isBlocked(new Point(world.getPosition().x,world.getPosition().y-1)); }
+										else if (world.facingSouth()) { return world.isBlocked(new Point(world.getPosition().x+1,world.getPosition().y)); }
+										else if (world.facingWest()) { return world.isBlocked(new Point(world.getPosition().x,world.getPosition().y+1)); }
+										}
+| < RIGHT ><RPAR> {if (world.facingNorth()) { return world.isBlocked(new Point(world.getPosition().x+1,world.getPosition().y)); }
+										else if (world.facingEast()) { return world.isBlocked(new Point(world.getPosition().x,world.getPosition().y+1)); }
+										else if (world.facingSouth()) { return world.isBlocked(new Point(world.getPosition().x-1,world.getPosition().y)); }
+										else if (world.facingWest()) { return world.isBlocked(new Point(world.getPosition().x,world.getPosition().y-1)); }
+										}
+| < FRONT ><RPAR> {if (world.facingNorth()) { return world.isBlocked(new Point(world.getPosition().x,world.getPosition().y+1)); }
+										else if (world.facingEast()) { return world.isBlocked(new Point(world.getPosition().x+1,world.getPosition().y)); }
+										else if (world.facingSouth()) { return world.isBlocked(new Point(world.getPosition().x,world.getPosition().y-1)); }
+										else if (world.facingWest()) { return world.isBlocked(new Point(world.getPosition().x-1,world.getPosition().y)); }
+										}
+| < BACK ><RPAR> {if (world.facingNorth()) { return world.isBlocked(new Point(world.getPosition().x,world.getPosition().y-1)); }
+										else if (world.facingEast()) { return world.isBlocked(new Point(world.getPosition().x-1,world.getPosition().y)); }
+										else if (world.facingSouth()) { return world.isBlocked(new Point(world.getPosition().x,world.getPosition().y+1)); }
+										else if (world.facingWest()) { return world.isBlocked(new Point(world.getPosition().x+1,world.getPosition().y)); }
+										}
+
+)
+}
+boolean isfacing():
+{boolean resp =false; }
+{
+  < ISFACING > <LPAR>(< NORTH > {resp= world.facingNorth(); } |< SOUTH > { resp = world.facingSouth(); } | < EAST > {resp = world.facingEast(); } | < WEST > {resp = world.facingWest(); } )  <RPAR>
+  {return resp; }
+  
+}
+boolean zero():
+{ }	
+{
+  < ZERO > <LPAR> { return valor()==0; } <RPAR>
+}
+void safeexecution():
+{ }
+{ ( { try { walk(); }
+				catch (Error e) {
+					System.out.println("Error en walk, no se ejecutó");
+				}
+		}
+| { try { jump(); }
+		catch (Error e) {
+			System.out.println("Error en jump, no se ejecutó");
+		}
+ }
+ | { try { drop(); }
+			catch (Error e) {
+				System.out.println("Error en drop, no se ejecutó");
+			}
+ }
+ | { try { pick(); }
+			catch (Error e) {
+				System.out.println("Error en pick, no se ejecutó");
+			}
+ }
+ | { try { grab(); }
+			catch (Error e) {
+				System.out.println("Error en grab, no se ejecutó");
+			}
+ }
+ | { try { letgo(); }
+			catch (Error e) {
+				System.out.println("Error en letgo, no se ejecutó");
+			}
+ }
+ | { try { pop(); }
+			catch (Error e) {
+				System.out.println("Error en pop, no se ejecutó");
+			}
+ }
+ )  }
+  
+void safeexe():
+{ }
+{
+< SAFEEXE > <LPAR> safeexecution() <RPAR> <SEMI> (<RPAR ><SEMI>)?
+}
+boolean condicion():
+{boolean resp = false; }
+{ //TODO: Saber si este tipo de sintaxis es valida juas juas 
+  (resp=isblocked() | resp=isfacing() | resp=zero() )
+  {return resp; }
+}
+boolean not():
+{
+    boolean resp = false;
+}
+{
+    <NOT> <LPAR> { resp = condicion(); } <RPAR> { return !resp; }
+}
+
+void condicional() :
+{
+  boolean resp = false;
+}
+{
+  <IF> <LPAR> (resp = not() | resp = condicion()) <RPAR> 
+  <THEN> 
+  {
+    if (resp==true) {
+      cambio=true;
+      bloque(); 
+      cambio=false;
+       // Ejecutar bloque si condition es true
+    } else {
+      // Parsear bloque sin ejecutar
+      condicion=false;
+	  cambio=true;
+      bloque();
+      condicion=true;
+      cambio=false;
+    }
+  }
+  ( <ELSE> 
+  {
+    System.out.println("Entro a Else");
+    if (resp==false) {
+      cambio=true;
+      System.out.println("Entro al if del else");
+      bloque(); 
+      cambio=false;
+    } else {
+      // Parsear bloque sin ejecutar
+	  condicion=false;
+	  cambio=true;
+      bloque();
+      condicion=true;
+      cambio=false;
+    }
+  })?
+  <FI>
+  <SEMI>
+}
+void llamarMacro():
+{ String nombre;
+  List<String > parametros = new ArrayList<String >();
+  List<String > acciones = new ArrayList<String >();}
+{
+  (< ELEMENTO >) { nombre= token.image; } 
+  { if (macroParametro.containsKey(nombre)) 
+  	{ parametros = macroParametro.get(nombre); } }
+  	<LPAR> (parametros = llamarParametros())? <RPAR> <SEMI>
+  	{ System.out.println(macroAcciones.containsKey(nombre)); System.out.println(macroParametro.get(nombre).size()); }
+  { if (macroAcciones.containsKey(nombre) && (parametros.size() == macroParametro.get(nombre).size()))
+  	{ acciones = macroAcciones.get(nombre); } }
+	  { for (String accion : acciones) {
+	    macroActual = nombre;
+	    System.out.println(accion);
+	    parseMacro(accion,parametros);
+	  } }
+}
+
+ArrayList<String > llamarParametros():
+{ArrayList<String > parametros= new ArrayList <String>();
+String parametro; }
+{
+  (
+    (<VALOR > {parametro = token.image; parametros.add(parametro); System.out.println(parametro); })
+    ("," < VALOR > {parametro = token.image; parametros.add(parametro); System.out.println(parametro); })*
+  )
+    { return parametros; }
+}
+void definirMacro():
+{String nombre;
+ArrayList <String > parametrosLista = new ArrayList<String >();
+List<String > acciones = new ArrayList<String >(); }
+{
+< MACRO > <ELEMENTO > { nombre= token.image; } <LPAR> (parametrosLista = definirParametros())? <RPAR> "{" acciones=definirAcciones(parametrosLista) "}" 
+{ macroParametro.put(nombre, parametrosLista); macroAcciones.put(nombre, acciones); }
+}
+
+
+ArrayList<String > definirParametros():
+{ArrayList<String > parametros= new ArrayList <String>();
+String parametro; }
+{
+  (
+    (< ELEMENTO > {parametro = token.image; parametros.add(parametro); })
+    ("," < ELEMENTO > {parametro = token.image; parametros.add(parametro); })*
+  )
+  {return parametros; }
+}
+List<String> definirAcciones(ArrayList<String> parametros):
+{
+	List<String> acciones = new ArrayList<>();
+	HashMap<String, Integer > posicionParametro = new HashMap<String,Integer >();
+	String elemento;
+	String accion;
+	int cantidadParametros = 0;
+}
+{
+  {
+    int posicion=0;
+    for (String parametro: parametros) {
+      posicionParametro.put(parametro,posicion);
+      posicion++;
+    }
+  }
+	(
+	  (
+	    
+		<WALK> <LPAR> (<ELEMENTO>|< VALOR >) { 
+			elemento = token.image; 
+		} <RPAR><SEMI> 
+	{
+		if (parametros.contains(elemento) && cantidadParametros < parametros.size()) {
+				acciones.add("WALK" + " P(" + Integer.toString(cantidadParametros) + ")"+ ";");
+				cantidadParametros++;
+		}
+		else {
+				acciones.add("WALK("+elemento+");");
+		 }
+	}
+	)
+	|
+	(
+	  
+	<JUMP> <LPAR> (<ELEMENTO>|< VALOR >) { 
+			elemento = token.image; 
+		} <RPAR><SEMI>
+	{
+		if (parametros.contains(elemento) && cantidadParametros < parametros.size()) {
+				acciones.add("JUMP" + " P(" + Integer.toString(posicionParametro.get(elemento)) + ");");
+				cantidadParametros++;
+		}
+		else {
+				acciones.add("JUMP("+elemento+");");
+		 }
+	}
+	)
+	|
+	(
+	<DROP> <LPAR> (<ELEMENTO>|< VALOR >) { 
+			elemento = token.image; 
+		} <RPAR><SEMI>
+	{
+		if (parametros.contains(elemento) && cantidadParametros < parametros.size()) {
+				acciones.add("DROP" + " P(" + Integer.toString(posicionParametro.get(elemento)) + ");");
+				cantidadParametros++;
+		}
+		else {
+				acciones.add("DROP("+elemento+");");
+		 }
+	}
+	)
+	|
+	(
+	<PICK> <LPAR> (<ELEMENTO>|< VALOR >) { 
+			elemento = token.image; 
+		} <RPAR><SEMI>
+			{
+		if (parametros.contains(elemento) && cantidadParametros < parametros.size()) {
+				acciones.add("PICK" + " P(" + Integer.toString(posicionParametro.get(elemento)) + ");");
+				cantidadParametros++;
+		}
+		else {
+				acciones.add("PICK("+elemento+");");
+		 }
+	}
+	)
+	|
+	(
+	<GRAB> <LPAR> (<ELEMENTO>|< VALOR >) { 
+			elemento = token.image; 
+		} <RPAR><SEMI> 
+	{
+		if (parametros.contains(elemento) && cantidadParametros < parametros.size()) {
+				acciones.add("GRAB" + " P(" + Integer.toString(posicionParametro.get(elemento)) + ");");
+				cantidadParametros++;
+		}
+		else {
+				acciones.add("GRAB("+elemento+");");
+		 }
+	}
+	)
+	|
+	(
+	<LETGO> <LPAR> (<ELEMENTO>|< VALOR >) { 
+			elemento = token.image; 
+		} <RPAR><SEMI> 
+	{
+		if (parametros.contains(elemento) && cantidadParametros < parametros.size()) {
+				acciones.add("LETGO" + " P(" + Integer.toString(posicionParametro.get(elemento)) + ");");
+				cantidadParametros++;
+		}
+		else {
+				acciones.add("LETGO("+elemento+");");
+		 }
+	}
+	)
+	|
+	(
+	  
+	<POP> <LPAR> (<ELEMENTO>|< VALOR >) { 
+			elemento = token.image; 
+		} <RPAR><SEMI> 
+	{
+		if (parametros.contains(elemento) && cantidadParametros < parametros.size()) {
+				acciones.add("POP" + " P(" + Integer.toString(posicionParametro.get(elemento)) + ");");
+				cantidadParametros++;
+		}
+		else {
+				acciones.add("POP("+elemento+");");
+		 }
+	}
+	)
+	|
+	(
+	  
+	<TURNTOMY> <LPAR> <ELEMENTO> { 
+			elemento = token.image; 
+		} <RPAR><SEMI> 
+	{
+		if (parametros.contains(elemento) && cantidadParametros < parametros.size()) {
+				acciones.add("TURNTOMY" + " P(" + Integer.toString(posicionParametro.get(elemento)) + ");");
+				cantidadParametros++;
+		}
+		else {
+				acciones.add("TURNTOMY("+elemento+");");
+		 }
+	}
+	)
+	|
+	(
+	<TURNTOTHE> <LPAR> <ELEMENTO> { 
+			elemento = token.image; 
+		} <RPAR><SEMI> 
+	{
+		if (parametros.contains(elemento) && cantidadParametros < parametros.size()) {
+				acciones.add("TURNTOTHE" + " P(" + Integer.toString(posicionParametro.get(elemento)) + ");");
+				cantidadParametros++;
+		}
+		else {
+				acciones.add("TURNTOTHE("+elemento+");");
+		 }
+	}
+	)
+	|
+	(
+	<MOVES> <LPAR> <ELEMENTO> { elemento = token.image; }  
+		{
+		if (parametros.contains(elemento) && cantidadParametros < parametros.size()) {
+			acciones.add("MOVES" + " P(" + Integer.toString(posicionParametro.get(elemento)) + ");");
+			cantidadParametros++;
+		}
+		else {
+			acciones.add("MOVES("+elemento+");");
+		 }
+		}
+		("," <ELEMENTO> { 
+				elemento = token.image; 
+		}  
+		{
+			if (parametros.contains(elemento) && cantidadParametros < parametros.size()) {
+							acciones.add("MOVES" + " P(" + Integer.toString(posicionParametro.get(elemento)) + ");");
+							cantidadParametros++;
+			}
+			else {
+				acciones.add("MOVES("+elemento+");");
+			}
+		})*
+		<RPAR><SEMI> 
+	)
+	  |
+	(
+	<NOP> <SEMI> 
+	{
+		acciones.add("NOP;");
+	}
+	)
+	|
+	(
+	  <SAFEEXE> <LPAR> (<WALK>|< JUMP >|< DROP >|<PICK >|< GRAB >|< LETGO >|< POP >) { accion= token.image; } <LPAR> < ELEMENTO >  { 
+			elemento = token.image; 
+		} <RPAR ><SEMI ><RPAR ><SEMI > 
+	{
+		if (parametros.contains(elemento) && cantidadParametros < parametros.size()) {
+				acciones.add("SAFEEXE" + " ("+ accion +"P(" + Integer.toString(posicionParametro.get(elemento)) + "););");
+				cantidadParametros++;
+		}
+		else {
+				acciones.add("SAFEEXE("+accion+"("+elemento+ "););");
+		 }
+	}
+	)
+ )*
+ { return acciones; }
+}
+
+void walk():
+{int numero;}
+{
+ <WALK> <LPAR> {numero = valor(); } walk_accion(numero) <RPAR><SEMI> 
+}
+void walk_accion(int numero):
+{}
+{
+  {numero =(int)numero;}
+{ if (condicion==true && cambio==false || condicion==true && cambio==true) {
+	System.out.println("doble si"); try { world.moveForward(numero,false); } catch (Error e) { System.out.println(e); } salida = "Command: WALK";} }
+}
+
+void jump():
+{int numero;}
+{
+ <JUMP>  <LPAR> {numero = valor(); } jump_accion(numero) <RPAR> <SEMI>
+}
+void jump_accion(int numero):
+{}
+{
+{ if (condicion==true && cambio==false || condicion==true && cambio==true) {
+	world.moveForward(numero, true); salida = "Command: JUMP";} }
+}
+
+void drop():
+{int numero;}
+{
+ <DROP> <LPAR> {numero = valor(); } drop_accion(numero) <RPAR> <SEMI>
+}
+void drop_accion(int numero):
+{}
+{
+{ if (condicion==true && cambio==false || condicion==true && cambio==true) {
+	world.putChips(numero); salida = "Command: DROP";} }
+}
+
+void pick():
+{int numero;}
+{
+ <PICK> <LPAR> {numero = valor(); } pick_accion(numero) <RPAR> <SEMI>
+}
+void pick_accion(int numero):
+{}
+{
+{ if (condicion==true && cambio==false || condicion==true && cambio==true) {
+	world.pickChips(numero); salida = "Command: PICK";} }
+}
+
+void grab():
+{int numero;}
+{
+ <GRAB> <LPAR> {numero = valor(); } grab_accion(numero) <RPAR> <SEMI>
+}
+void grab_accion(int numero):
+{}
+{
+{ if (condicion==true && cambio==false || condicion==true && cambio==true) {
+	world.grabBalloons(numero); salida = "Command: GRAB";} }
+}
+
+void letgo():
+{int numero;}
+{
+ <LETGO> <LPAR> {numero = valor(); } letgo_accion(numero) <RPAR> <SEMI>
+}
+void letgo_accion(int numero):
+{}
+{
+{ if (condicion==true && cambio==false || condicion==true && cambio==true) {
+	world.putBalloons(numero); salida = "Command: LETGO";} }
+}
+
+void pop():
+{int numero;}
+{
+ <POP> <LPAR> {numero = valor(); } pop_accion(numero) <RPAR> <SEMI>
+}
+void pop_accion(int numero):
+{}
+{
+{ if (condicion==true && cambio==false || condicion==true && cambio==true) {
+	world.popBalloons(numero); salida = "Command: POP";} }
+}
+
+//boolean command(uniandes.lym.robot.view.Console sistema) :
+	boolean command(Console sistema):
+	{	
+		
+		int x,y;
+		salida=new String();	
+	}
+
+	
+	{
+		((((
+		  inicial()
+		| <RIGHT> "(" ")" {world.turnRight();salida = "Command: Turnright";}
+		| 	<MOV>  "(" x=num() ")" {world.moveForward(x,false);salida = "Command: Moveforward ";}  
+		| 	<HOP>  "(" x=num() ")" {world.moveForward(x,true);salida = "Command:Jumpforward ";}
+		| 	<GO>  "(" x=num() "," y=num()")" {world.setPostion(x,y);salida = "Command:GO ";}  
+		|  <PUT> "("  put() ")"					  			
+		|  <PICK> "(" get()  ")"	
+	    |  < POP > "(" x=num() ")" {world.popBalloons(x); salida = "Comando:  Pop";}
+		) ";")
+) 
+
+		{
+		    try {
+	    			 Thread.sleep(900);
+	    	    } catch (InterruptedException e) {
+	    			        System.err.format("IOException: %s%n", e);
+	    		    }
+	    			 
+			sistema.printOutput(salida);
+			return true;
+		})+
+
+    	| <EOF> {return false;} 
+	}
+
+	void put() :
+	{
+		int f=1;	
+	}
+	{
+		( <CHIPS>    "," f=num() {world.putChips(f); salida = "Command:  Put Chips"; })
+		|  	  ( <BALLOONS>   "," f=num() {world.putBalloons(f); salida = "Command:  Put Balloons";})	 
+
+	}
+
+	void get() :
+	{
+		int f=1;	
+	}
+	{
+		( <CHIPS>   "," f=num() {world.pickChips(f);salida = "Command:  Pick chips";})
+		|  	  ( <BALLOONS>   "," f=num() {world.grabBalloons(f);salida="Command:  Pick balloons";})	 
+
+	}
+
+	
+	
+
+	/**
+	 * Unsigned decimal number
+	 * @return the corresponding value of the string
+	 * @error  corresponding value is too large
+	 */
+
+	int num() throws Error:
+	{	
+		int total=1;
+	}
+	{
+		<NUM>
+		{
+			try 
+			{
+			} 
+			catch (NumberFormatException ee) 
+			{
+				throw new Error("Number out of bounds: "+token.image+" !!");
+			}
+			return total;
+		}
+	}
+
+	
+
+
+	

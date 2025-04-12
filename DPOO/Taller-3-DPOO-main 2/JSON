@@ -1,0 +1,39 @@
+{
+  "aviones": false,
+  "vuelos": [{
+    "fecha": "1",
+    "ruta": {"rutas": [{
+      "codigoRuta": "1",
+      "horaLlegada": "1",
+      "origen": {
+        "latitud": 0,
+        "longitud": 0
+      },
+      "destino": {
+        "codigo": "1",
+        "latitud": 1,
+        "longitud": 1,
+        "nombreCiudad": "1",
+        "nombre": "1"
+      },
+      "horaSalida": "1"
+    }]},
+    "avion": {"aviones": false}
+  }],
+  "rutas": [{
+    "codigoRuta": "1",
+    "horaLlegada": "1",
+    "origen": {
+      "latitud": 0,
+      "longitud": 0
+    },
+    "destino": {
+      "codigo": "1",
+      "latitud": 1,
+      "longitud": 1,
+      "nombreCiudad": "1",
+      "nombre": "1"
+    },
+    "horaSalida": "1"
+  }]
+}

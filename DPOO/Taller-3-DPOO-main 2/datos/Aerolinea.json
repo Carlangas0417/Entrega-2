@@ -1,0 +1,56 @@
+{
+  "aviones": [
+    {
+      "nombre": "Avianca 1",
+      "capacidad": 100
+    },
+    {
+      "nombre": "Avianca 2",
+      "capacidad": 250
+    }
+  ],
+  "aeropuertos": [
+    {
+      "codigo": "MCO",
+      "latitud": 21,
+      "longitud": 12,
+      "nombreCiudad": "Orleando",
+      "nombre": "Orlando"
+    },
+    {
+      "codigo": "BOG",
+      "latitud": 12,
+      "longitud": 12,
+      "nombreCiudad": "Bogota",
+      "nombre": "Bogota"
+    }
+  ],
+  "vuelos": [
+    {
+      "fecha": "2024-09-21",
+      "codigoRuta": "AV9",
+      "avion": "Avianca 1"
+    },
+    {
+      "fecha": "2024-09-21",
+      "codigoRuta": "AV10",
+      "avion": "Avianca 2"
+    }
+  ],
+  "rutas": [
+    {
+      "codigoRuta": "AV9",
+      "horaLlegada": "1200",
+      "origen": "BOG",
+      "destino": "MCO",
+      "horaSalida": "1000"
+    },
+    {
+      "codigoRuta": "AV10",
+      "horaLlegada": "1100",
+      "origen": "MCO",
+      "destino": "BOG",
+      "horaSalida": "1000"
+    }
+  ]
+}

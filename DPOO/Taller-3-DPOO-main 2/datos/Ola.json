@@ -1,0 +1,7 @@
+{
+  "clientes": [{
+    "tipoCliente": "Natural",
+    "nombre": "Diego"
+  }],
+  "tiquetes": []
+}

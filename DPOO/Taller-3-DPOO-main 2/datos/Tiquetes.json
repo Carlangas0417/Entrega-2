@@ -1,0 +1,14 @@
+{
+  "clientes": [{
+    "tipoCliente": "Natural",
+    "nombre": "Diego"
+  }],
+  "tiquetes": [{
+    "fecha": "2024-09-21",
+    "tarifa": 1871616,
+    "cliente": "Diego",
+    "codigoRuta": "AV9",
+    "usado": false,
+    "codigoTiquete": "62093984"
+  }]
+}
