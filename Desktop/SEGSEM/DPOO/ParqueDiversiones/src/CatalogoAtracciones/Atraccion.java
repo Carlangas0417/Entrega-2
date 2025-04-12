@@ -7,6 +7,8 @@ import GestionEmpleados.Empleado;
 
 public abstract class Atraccion {
 	
+	private static int contadorId = 1; 
+    public final int id; 
 	public String nombre;
 	public String ubicacion;
 	public int cupoMax;
@@ -19,6 +21,7 @@ public abstract class Atraccion {
 
 	public Atraccion(String nombre, String ubicacion, int cupoMax, int empleadosMin,
 			String nivelExclusividad, List<String> disponibleClima, List<Empleado> empleados) {
+		this.id = contadorId++;
 		this.nombre = nombre;
 		this.ubicacion = ubicacion;
 		this.cupoMax = cupoMax;
@@ -27,16 +30,20 @@ public abstract class Atraccion {
 		this.disponibleClima = disponibleClima;
 		this.empleados = empleados;
 		
-		if (this.empleados.size() >= empleadosMin) {
-			this.prestaServicio = true;
+		if (this.empleados != null) {
+		
+			if (this.empleados.size() >= empleadosMin) {
+				this.prestaServicio = true;
+			}
+			else {
+				this.prestaServicio = false;
+			}
 		}
 		else {
 			this.prestaServicio = false;
 		}
 		
 	}
-	
-	//public void asignarEmpleado();
 	
 	public String getNombre() {
 		return nombre;
@@ -101,6 +108,12 @@ public abstract class Atraccion {
 				this.prestaServicio = true;
 				System.out.print("Como ahora hay " + this.empleados.size() + "la atracción presta servicio.");
 		}
+	}
+
+
+	public void asignarEmpleado(Empleado empleado) {
+		// TODO Auto-generated method stub
+		
 	}
      
 }
