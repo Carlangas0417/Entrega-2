@@ -8,9 +8,13 @@ public class Administrador extends Empleado {
 		super(nombre, id, password, login, turnosAsignados);
 	}
 	
-	public void asignarEmpleado(Empleado empleado, LugarServicio lugarServicio) {
-		
+	
+	public void asignarLugarServicio(ACajero empleado, LugarServicio sitio) throws Exception{
 	}
+	
+	public void asignarOperador() {
+			
+		}
 	
 	//asignar empleado a atracción
 	//asignar empleado a cafeteria

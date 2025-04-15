@@ -9,7 +9,11 @@ import java.util.List;
 import java.util.Set;
 
 import ConsolaGeneral.CGeneral;
+import GestionEmpleados.Cafeteria;
+import GestionEmpleados.Cajero;
+import GestionEmpleados.Cocinero;
 import GestionEmpleados.Empleado;
+import GestionEmpleados.Operador;
 import GestionEmpleados.Turno;
 
 public class ConsolaAtracciones extends CGeneral {
@@ -26,12 +30,16 @@ public class ConsolaAtracciones extends CGeneral {
 		diaTarde.add(turnoDIA);
 		diaTarde.add(turnoTARDE);
 		
-		Empleado Ivan = new Empleado("Iván", "123456789", "hola", "i.van", tarde); //cafeteria
-		Empleado Carlos = new Empleado("Carlos", "20241010", "hola", "c.arlos", dia); //tienda
-		Empleado Sergio = new Empleado("Sergio", "20201011", "hola", "s.ergio", diaTarde); //taquilla
-		Empleado Luisa = new Empleado("Luisa", "20241012", "hola", "l.uisa", tarde); //operador medio
-		Empleado Carla = new Empleado("Carla", "20241013", "hola", "c.arla", dia); //operador alto dia
-		Empleado Alejandro = new Empleado("Alejandro", "20241014", "hola", "a.lejandro", diaTarde); //operador alto diaTarde
+		Cocinero Ivan = new Cocinero("Ivan", "123", "hola", "i.van", diaTarde, null);  //cafeteria - Cocinero
+		Cajero Carlos = new Cajero("Carlos", "20241010", "hola", "c.arlos", dia, null); //tienda - Cajero
+		Cajero Sergio = new Cajero("Sergio", "20201011", "hola", "s.ergio", diaTarde, null); //taquilla - Cajero
+		Operador Luisa = new Operador("Luisa", "20241012", "hola", "l.uisa", tarde, false, null, null); //operador medio
+		Operador Carla = new Operador("Carla", "20241013", "hola", "c.arla", dia, true, null, null); //operador alto dia
+		Operador Alejandro = new Operador("Alejandro", "20241014", "hola", "a.lejandro", diaTarde, true, null, null); //operador alto dia
+		
+		Cafeteria cafeteria = new Cafeteria(null,"Sur");
+		
+		
 		
 		
 	    ConsolaAtracciones consola = new ConsolaAtracciones();
@@ -152,4 +160,6 @@ public class ConsolaAtracciones extends CGeneral {
         System.out.println("¡Atracción creada con éxito!\n");
         
     }
+    
+    
 }

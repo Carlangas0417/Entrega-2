@@ -3,11 +3,13 @@ package GestionEmpleados;
 public class LugarServicio {
 	private ACajero cajeroAsignado;
 	private String ubicacion; 
+	private String tipo; 
 
-	public LugarServicio(ACajero cajeroAsignado, String ubicacion) {
+	public LugarServicio(ACajero cajeroAsignado, String ubicacion, String tipo) {
 		super();
 		this.cajeroAsignado = cajeroAsignado;
 		this.ubicacion = ubicacion;
+		this.tipo = tipo;
 	}
 
 	public ACajero getCajeroAsignado() {
@@ -18,9 +20,19 @@ public class LugarServicio {
 		return ubicacion;
 	}
 
-	public void setCajeroAsignado(ACajero cajeroAsignado) {
-		this.cajeroAsignado = cajeroAsignado;
-	} 
+	public void asignarCajero(ACajero nuevoCajero) {
+	    if (nuevoCajero != null) {
+	        this.cajeroAsignado = nuevoCajero;
+	        System.out.println("Cajero asignado correctamente: " + nuevoCajero.getNombre());
+	    } else {
+	        System.out.println("No se puede asignar un cajero nulo.");
+	    }
+	}
+
+	
+	public String getTipo() {
+		return this.tipo; 
+	}
 	
 	
 	

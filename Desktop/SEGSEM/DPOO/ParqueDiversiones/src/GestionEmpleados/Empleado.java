@@ -15,4 +15,8 @@ public class Empleado extends Usuario{
 	//Ver sitrio de trabajo
 	
 	
+	
+	
+	
+	
 }
