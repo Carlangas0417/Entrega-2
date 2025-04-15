@@ -101,6 +101,10 @@ public abstract class Atraccion {
 		this.prestaServicio = prestaServicio;
 	}
 	
+	public List<Empleado> getEmpleados(){
+		return this.empleados;
+	}
+	
 	public void agregarEmpleado(Empleado empleado) {
 		this.empleados.add(empleado);
 		System.out.print("Se ha agregado un nuevo empleado a la lista.");

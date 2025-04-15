@@ -1,19 +1,42 @@
 package CatalogoAtracciones;
 
+import java.awt.Dialog;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import ConsolaGeneral.CGeneral;
+import GestionEmpleados.Empleado;
+import GestionEmpleados.Turno;
 
 public class ConsolaAtracciones extends CGeneral {
 	
 	public static void main(String[] args) throws IOException {
+		Turno turnoDIA = new Turno(700, 1500);
+		Turno turnoTARDE = new Turno(1500, 2300);
+		
+		List<Turno> dia = new ArrayList<Turno>();
+		dia.add(turnoDIA);
+		List<Turno> tarde = new ArrayList<Turno>();
+		tarde.add(turnoTARDE);
+		List<Turno> diaTarde = new ArrayList<Turno>();
+		diaTarde.add(turnoDIA);
+		diaTarde.add(turnoTARDE);
+		
+		Empleado Ivan = new Empleado("Iván", "123456789", "hola", "i.van", tarde); //cafeteria
+		Empleado Carlos = new Empleado("Carlos", "20241010", "hola", "c.arlos", dia); //tienda
+		Empleado Sergio = new Empleado("Sergio", "20201011", "hola", "s.ergio", diaTarde); //taquilla
+		Empleado Luisa = new Empleado("Luisa", "20241012", "hola", "l.uisa", tarde); //operador medio
+		Empleado Carla = new Empleado("Carla", "20241013", "hola", "c.arla", dia); //operador alto dia
+		Empleado Alejandro = new Empleado("Alejandro", "20241014", "hola", "a.lejandro", diaTarde); //operador alto diaTarde
+		
+		
 	    ConsolaAtracciones consola = new ConsolaAtracciones();
 	    consola.ejecutar(); 
+	    
 	}
 	
 
@@ -34,22 +57,30 @@ public class ConsolaAtracciones extends CGeneral {
 
             if (opcion.equals("1")) {
             	System.out.println("Ha elegido atracción mecánica.\n");
-            	terminado = crearMecanica();
-            } else if (opcion.equals("2")) {
-                System.out.println("Ha elegido atracción Cultural.");
-            } else if (opcion.equals("3")) {
+            	crearMecanica();
+            } 
+            
+            else if (opcion.equals("2")) {
+                System.out.println("Ha elegido atracción Cultural.\n");
+                crearCultural();
+            } 
+            
+            else if (opcion.equals("3")) {
                 System.out.println("Ha elegido atracción de Espectáculo.");
-            } else {
+            } 
+            
+            else {
                 System.out.println("Opción no válida.");
             }
 
             System.out.print("¿Desea ingresar otra atracción? (s/n): ");
             String respuesta = reader.readLine();
+            
             if (respuesta.equalsIgnoreCase("n")) {
                 terminado = true;
             }
 
-            System.out.println(); // Salto de línea por estética
+            System.out.println(); // Salto de línea por estética (jaja)
         }
 
         System.out.println("Gracias por usar la consola de atracciones.");
@@ -57,7 +88,7 @@ public class ConsolaAtracciones extends CGeneral {
     
    
     
-    public boolean crearMecanica() {
+    public void crearMecanica() {
     	String nombre = cadena("Ingrese el nombre de la atracción");
         String ubicacion = cadena("Ingrese la ubicación de la atracción");
         
@@ -91,12 +122,34 @@ public class ConsolaAtracciones extends CGeneral {
         String exclusividad = revisarSetString(exclusividadValidos, "Ingrese la exclusividad de la atracción (BASICO, FAMILIAR, ORO, DIAMANTE)");
         
         Mecanica atrMecanica = new Mecanica(nombre, ubicacion, cupoMax, empleadosMin, exclusividad,
-        		disponibleClima, alturaMaxima, alturaMinima, pesoMaximo, pesoMinimo, contraindicaciones, riesgo);
+        		disponibleClima, alturaMaxima, alturaMinima, pesoMaximo, pesoMinimo, contraindicaciones, riesgo, null);
+        //////////REVISAR ESE NULL CUANDO YA ESTÉ BIEN LO DE EMPLEADOS
         
         atrMecanica.mostrarMecanica();
         
         System.out.println("¡Atracción creada con éxito!\n");
         
-        return true;
+    }
+    
+    public void crearCultural() {
+    	String nombre = cadena("Ingrese el nombre de la atracción");
+        String ubicacion = cadena("Ingrese la ubicación de la atracción");
+        
+        int cupoMax = natural("Ingrese el cupo máximo de la atracción");
+        int empleadosMin = natural("Ingrese el mínimo de empleados para la atracción");
+        
+        Set<String> exclusividadValidos = Set.of("FAMILIAR", "ORO", "DIAMANTE", "BASICO");
+        String exclusividad = revisarSetString(exclusividadValidos, "Ingrese la exclusividad de la atracción (BASICO, FAMILIAR, ORO, DIAMANTE)");
+        List<String> disponibleClima = lista("Ingrese el clima en el que la atracción está disponible");
+        List<Empleado> empleados = null;
+        //////////REVISAR ESE NULL CUANDO YA ESTÉ BIEN LO DE EMPLEADOS
+        
+        
+        Cultural atrCultural = new  Cultural(nombre, ubicacion, cupoMax, empleadosMin, exclusividad, disponibleClima, null);
+        
+        atrCultural.mostrarCultural();
+        
+        System.out.println("¡Atracción creada con éxito!\n");
+        
     }
 }

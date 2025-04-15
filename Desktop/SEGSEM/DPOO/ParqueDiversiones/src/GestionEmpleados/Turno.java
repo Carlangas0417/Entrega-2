@@ -2,19 +2,19 @@ package GestionEmpleados;
 
 public class Turno {
 	
-	private String horaEntrada;
-	private String horaSalida;
+	private int horaEntrada;
+	private int horaSalida;
 	
-	public Turno(String horaEntrada, String horaSalida) {
+	public Turno(int horaEntrada, int horaSalida) {
 		this.horaEntrada = horaEntrada;
 		this.horaSalida = horaSalida;
 	}
 	
-	public String getHoraEntrada() {
+	public int getHoraEntrada() {
 		return horaEntrada;
 	}
 
-	public String getHoraSalida() {
+	public int getHoraSalida() {
 		return horaSalida;
 	}
 	
