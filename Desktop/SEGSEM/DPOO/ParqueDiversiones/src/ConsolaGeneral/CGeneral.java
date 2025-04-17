@@ -105,6 +105,7 @@ public class CGeneral {
             lista.add(input);
             respuesta = cadena("¿Desea agregar otro elemento? (s/n)");
         }
+        System.out.println(lista);
         return lista;
     }
     

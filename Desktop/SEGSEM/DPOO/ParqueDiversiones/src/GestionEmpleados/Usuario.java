@@ -4,12 +4,12 @@ import java.util.HashMap;
 
 public abstract class Usuario {
 	
+	public static HashMap<String, String> usuarios = new HashMap<>();
+	protected static HashMap<String, String> contrasenas = new HashMap<>();
 	public String nombre;
 	public String id;
 	protected String password;
 	protected String login;
-	protected static HashMap<String, String> contrasenas;
-	protected static HashMap<String, String> usuarios;
 	
 	//protected List <Tiquetes> tiquetesDisponibles;
 	

@@ -14,6 +14,12 @@ public class ACajero extends Empleado {
 	public LugarServicio getLugarServicio() {
 		return lugarServicio;
 	}
+
+	public void setLugarServicio(LugarServicio lugarServicio) {
+		this.lugarServicio = lugarServicio;
+	}
+	
+	
 	
 	
 

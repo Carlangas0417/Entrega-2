@@ -1,9 +1,9 @@
 package CatalogoAtracciones;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import GestionEmpleados.Empleado;
-import GestionEmpleados.Operador;
 
 public class Mecanica extends Atraccion{
 	
@@ -23,7 +23,7 @@ public class Mecanica extends Atraccion{
 		this.alturaMinima = alturaMinima;
 		this.pesoMaximo = pesoMaximo;
 		this.pesoMinimo = pesoMinimo;
-		this.contraindicaciones = contraindicaciones;
+		this.contraindicaciones = new ArrayList<>();
 		this.nivelRiesgo = nivelRiesgo;
 	}
 
@@ -51,31 +51,9 @@ public class Mecanica extends Atraccion{
 		return nivelRiesgo;
 	}
 	
-	@Override
-	public void asignarEmpleado(Empleado empleado) {
-	    if (empleado instanceof Operador) {
-	        System.out.println("El empleado es un Operador.");
-	        Operador operador = (Operador) empleado;
-	        
-	        if (this.nivelRiesgo.equals("ALTO")) {
-	        	if (operador.getAtraccionesEntrenado().contains(this.id)) {
-	        		
-	        	}
-	        } 
-	        
-	        else {
-	        	System.out.println("El empleado seleccionado no está capacitado para la atracción.");
-	        }
-
-	    }
-	    else {
-	        System.out.println("El empleado NO es un Operador.\n");
-	        System.out.println("No se puede asignar el empleado deseado a la atracción.\n");
-        }
+	public void anadirContraindicacion(String contra) {
+		this.contraindicaciones.add(contra);
 	}
-	
-	
-	
 	
 	public void mostrarMecanica() {
 	    System.out.println("Detalles de la atracción Mecánica:");

@@ -1,7 +1,7 @@
 package CatalogoAtracciones;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import GestionEmpleados.Empleado;
 
@@ -27,7 +27,7 @@ public abstract class Atraccion {
 		this.cupoMax = cupoMax;
 		this.empleadosMin = empleadosMin;
 		this.nivelExclusividad = nivelExclusividad;
-		this.disponibleClima = disponibleClima;
+		this.disponibleClima = new ArrayList<>();
 		this.empleados = empleados;
 		
 		if (this.empleados != null) {
@@ -42,6 +42,7 @@ public abstract class Atraccion {
 		else {
 			this.prestaServicio = false;
 		}
+		this.empleados = new ArrayList<>();
 		
 	}
 	
@@ -105,12 +106,16 @@ public abstract class Atraccion {
 		return this.empleados;
 	}
 	
+	public void anadirClima(String clima) {
+		this.disponibleClima.add(clima);
+	}
+	
 	public void agregarEmpleado(Empleado empleado) {
 		this.empleados.add(empleado);
-		System.out.print("Se ha agregado un nuevo empleado a la lista.");
+		System.out.print("Se ha agregado un nuevo empleado a la lista.\n");
 		if (!prestaServicio && this.empleados.size() >= empleadosMin) {
 				this.prestaServicio = true;
-				System.out.print("Como ahora hay " + this.empleados.size() + "la atracción presta servicio.");
+				System.out.print("Como ahora hay " + this.empleados.size() + " empleado(s) y el mínimo de empleados es " + getEmpleadosMin() + " la atracción presta servicio.\n");
 		}
 	}
 
