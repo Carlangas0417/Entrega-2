@@ -295,6 +295,7 @@ public class ConsolaAtracciones extends CGeneral {
                 this.atracciones.add(atraccionCargada);
                 System.out.println("\n");
             }
+            if ()
 
         } catch (Exception e) {
             System.out.println("Error al cargar los datos");
