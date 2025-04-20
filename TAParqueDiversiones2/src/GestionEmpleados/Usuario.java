@@ -1,29 +1,27 @@
 package GestionEmpleados;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
+
+import Tiquetes.Tiquete;
 
 public abstract class Usuario {
 	
-	public static HashMap<String, String> usuarios = new HashMap<>();
-	protected static HashMap<String, String> contrasenas = new HashMap<>();
+	private static int contadorIds = 0;
 	public String nombre;
 	public String id;
 	protected String password;
 	protected String login;
+	protected List <Tiquete> tiquetesDisponibles;
 	
-	//protected List <Tiquetes> tiquetesDisponibles;
-	
-	public Usuario(String nombre, String id, String password, String login) {
-		if (usuarios.containsKey(login)) {
-			throw new IllegalArgumentException("Error: el login '" + login + "' ya está en uso.");
-		}
+	public Usuario(String nombre, String password, String login) {
 		this.nombre = nombre;
-		this.id = id;
+		this.id = String.valueOf(contadorIds); 
+        contadorIds++; 
 		this.password = password;
 		this.login = login;
-		
-		usuarios.put(nombre, login);
-		contrasenas.put(login, password); 
+		this.tiquetesDisponibles = new ArrayList<>();
+
 	}
 
 	public String getNombre() {
@@ -56,6 +54,10 @@ public abstract class Usuario {
 
 	public void setLogin(String login) {
 		this.login = login;
+	}
+	
+	public List<Tiquete> getTiquetesDisponibles(){
+		return tiquetesDisponibles;
 	}
 	
 	

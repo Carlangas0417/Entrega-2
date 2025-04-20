@@ -6,8 +6,8 @@ public class ACajero extends Empleado {
 	
 	private LugarServicio lugarServicio;
 
-	public ACajero(String nombre, String id, String password, String login, List<Turno> turnosAsignados, LugarServicio lugarServicio) {
-		super(nombre, id, password, login, turnosAsignados);
+	public ACajero(String nombre,String password, String login, List<Turno> turnosAsignados, LugarServicio lugarServicio) {
+		super(nombre, password, login, turnosAsignados);
 		this.lugarServicio = lugarServicio;
 	}
 

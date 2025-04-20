@@ -10,9 +10,9 @@ public class Operador extends Empleado{
 	private List<Integer> atraccionesEntrenado;
 	private int atraccionAsignada;
 	
-	public Operador(String nombre, String id, String password, String login, List<Turno> turnosAsignados,
+	public Operador(String nombre, String password, String login, List<Turno> turnosAsignados,
 			boolean riesgoAlto, List<Integer> atraccionesEntrenado, int atraccionAsignada) {
-		super(nombre, id, password, login, turnosAsignados);
+		super(nombre, password, login, turnosAsignados);
 		this.atraccionAsignada = atraccionAsignada;
 		this.riesgoAlto = riesgoAlto;
 		this.atraccionesEntrenado = new ArrayList<>();

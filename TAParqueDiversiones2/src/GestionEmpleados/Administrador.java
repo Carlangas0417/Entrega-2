@@ -1,14 +1,19 @@
 package GestionEmpleados;
 
+import java.util.HashMap;
 import java.util.List;
 
 import CatalogoAtracciones.Mecanica;
 import Exceptions.AsignacionInvalidaException;
 
 public class Administrador extends Empleado {
+	
+	public static HashMap<String, String> usuariosAdmins = new HashMap<>();
+	protected static HashMap<String, String> contrasenasAdmins = new HashMap<>();
+	protected static HashMap<String, Administrador> adminsInfoCompletitud = new HashMap<>();
 
-    public Administrador(String nombre, String id, String password, String login, List<Turno> turnosAsignados) {
-        super(nombre, id, password, login, turnosAsignados);
+    public Administrador(String nombre, String password, String login, List<Turno> turnosAsignados) {
+        super(nombre, password, login, turnosAsignados);
     }
 
     public void asignarOperador(Operador operador, Mecanica mecanica) throws AsignacionInvalidaException {

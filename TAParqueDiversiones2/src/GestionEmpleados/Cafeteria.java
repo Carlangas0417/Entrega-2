@@ -8,8 +8,8 @@ public class Cafeteria extends LugarServicio{
 	public String tipo;
 	public List<Cocinero> cocineros;
 
-	public Cafeteria(ACajero cajeroAsignado, String ubicacion, List<Cocinero> cocineros) {
-		super(cajeroAsignado, ubicacion, CAFETERIA);
+	public Cafeteria(ACajero cajeroAsignado, String ubicacion, List<Cocinero> cocineros, String nombre) {
+		super(cajeroAsignado, ubicacion, CAFETERIA, nombre);
 		this.cocineros = cocineros;
 	}
 	

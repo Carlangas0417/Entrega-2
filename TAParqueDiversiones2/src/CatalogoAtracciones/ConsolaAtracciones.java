@@ -14,9 +14,12 @@ public class ConsolaAtracciones extends CGeneral {
 
     private List<Mecanica> mecanicas = new ArrayList<>();
     private List<Operador> operadores = new ArrayList<>();
-    Administrador elAdmin = new Administrador("El Admin", "002200202", "lalalal", "el.admin", null);
+    Administrador elAdmin = new Administrador("elAdmin", "eladmin", "el.admin", null);
     private List<Atraccion> atracciones = new ArrayList<>();
     private List<Atraccion> relaciones = new ArrayList<>();
+    
+    //cambiar los datos de las atracciones ya creadas.
+    //cambiar los datos de las relaciones ya establecidas. 
 
     
     public static void main(String[] args) throws IOException {
@@ -33,13 +36,13 @@ public class ConsolaAtracciones extends CGeneral {
         diaTarde.add(turnoDIA);
         diaTarde.add(turnoTARDE);
 
-        Operador luisa = new Operador("Luisa", "20241012", "hola", "l.uisa", tarde, false, null, 1);
+        Operador luisa = new Operador("Luisa", "hola", "l.uisa", tarde, false, null, 1);
         luisa.anadirAtraccionEntrenado(1);
 
-        Operador carla = new Operador("Carla", "20241013", "hola", "c.arla", dia, true, null, 2);
+        Operador carla = new Operador("Carla", "hola", "c.arla", dia, true, null, 2);
         carla.anadirAtraccionEntrenado(2);
 
-        Operador alejandro = new Operador("Alejandro", "20241014", "hola", "a.lejandro", diaTarde, true, null, 3);
+        Operador alejandro = new Operador("Alejandro", "hola", "a.lejandro", diaTarde, true, null, 3);
         alejandro.anadirAtraccionEntrenado(2);
         alejandro.anadirAtraccionEntrenado(3);
 
